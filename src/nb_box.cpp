@@ -3,8 +3,7 @@
 #include <QDebug>
 
 NB_Box::NB_Box(unsigned int box_index, QGraphicsItem* parent) :
-    QGraphicsRectItem(parent),
-    _index(box_index)
+    QGraphicsEllipseItem(parent)
 {
     _status = BoxStatus::BLUEBERRY;
 }
@@ -49,11 +48,11 @@ void NB_Box::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             } else {
                 // 3
                 angle =  270 - (qAtan2( (_start_pos.x() - _end_pos.x()) , (_end_pos.y() - _start_pos.y() ))  / 3.14 / 2 * 360);
-            }
+            }            
         }
-        qDebug() << "angle :" << angle << " n " << intensity;
-        // here call scrolling algorithm
-        // update GUI via emit NewStatus(_index);
+
+        // here call rotate algorithm
+        emit RotateBoxes(this, angle, intensity);
     }
     else
     {
@@ -66,6 +65,6 @@ void NB_Box::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             _status = BoxStatus::PLAYER2;
         }
-        emit NewStatus(_index);
+        emit NewStatus(this);
     }
 }

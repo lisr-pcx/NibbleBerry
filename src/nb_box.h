@@ -8,7 +8,7 @@
 #include <QCursor>
 #include "nb_globals.h"
 
-class NB_Box : public QObject, public QGraphicsRectItem
+class NB_Box : public QObject, public QGraphicsEllipseItem
 {
     Q_OBJECT
 
@@ -20,11 +20,11 @@ public:
         PLAYER2,
         NUMBER_OF_STATES // trick to get the size of enum
     };
+    Q_ENUM(BoxStatus)
 
     NB_Box(unsigned int box_index, QGraphicsItem* parent=0);
 
     // Getters and Setters
-    unsigned int GetIndex() { return _index; };
     BoxStatus GetStatus() { return _status; };
 
 public slots:
@@ -32,10 +32,10 @@ public slots:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 signals:
-    void NewStatus(unsigned int index);
+    void NewStatus(NB_Box* ptr_box);
+    void RotateBoxes(NB_Box* ptr_box, int angle, int intensity);
 
 private:
-    unsigned int    _index;
     BoxStatus       _status;
     QPoint          _start_pos;
     QPoint          _end_pos;
