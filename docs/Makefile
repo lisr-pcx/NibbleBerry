@@ -288,6 +288,7 @@ Makefile: ../src/NibbleBerry.pro C:/Qt/6.5.2/wasm_singlethread/mkspecs/wasm-emsc
 		C:/Qt/6.5.2/wasm_singlethread/mkspecs/common/wasm/wasm.conf \
 		C:/Qt/6.5.2/wasm_singlethread/mkspecs/wasm-emscripten/qmake.conf \
 		C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/exclusive_builds.prf \
 		C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/toolchain.prf \
 		C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/default_pre.prf \
@@ -533,6 +534,7 @@ C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/qt_config.prf:
 C:/Qt/6.5.2/wasm_singlethread/mkspecs/common/wasm/wasm.conf:
 C:/Qt/6.5.2/wasm_singlethread/mkspecs/wasm-emscripten/qmake.conf:
 C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/spec_post.prf:
+.qmake.stash:
 C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/exclusive_builds.prf:
 C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/toolchain.prf:
 C:/Qt/6.5.2/wasm_singlethread/mkspecs/features/default_pre.prf:
@@ -949,6 +951,7 @@ moc_nb_game.cpp: ../src/nb_game.h \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtWidgets/QGraphicsScene \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/QVector \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/qvector.h \
+		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/QVectorIterator \
 		../src/nb_globals.h \
 		../src/nb_box.h \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtWidgets/QGraphicsRectItem \
@@ -1154,6 +1157,7 @@ main.obj: ../src/main.cpp C:/Qt/6.5.2/wasm_singlethread/include/QtWidgets/QAppli
 		C:/Qt/6.5.2/wasm_singlethread/include/QtWidgets/QGraphicsScene \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/QVector \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/qvector.h \
+		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/QVectorIterator \
 		../src/nb_globals.h \
 		../src/nb_box.h \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtWidgets/QGraphicsRectItem \
@@ -1474,6 +1478,7 @@ nb_game.obj: ../src/nb_game.cpp ../src/nb_game.h \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtWidgets/QGraphicsScene \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/QVector \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/qvector.h \
+		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/QVectorIterator \
 		../src/nb_globals.h \
 		../src/nb_box.h \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtWidgets/QGraphicsRectItem \
@@ -1481,7 +1486,8 @@ nb_game.obj: ../src/nb_game.cpp ../src/nb_game.h \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtGui/qpainterpath.h \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtWidgets/QGraphicsItem \
 		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/QPoint \
-		C:/Qt/6.5.2/wasm_singlethread/include/QtGui/QCursor
+		C:/Qt/6.5.2/wasm_singlethread/include/QtGui/QCursor \
+		C:/Qt/6.5.2/wasm_singlethread/include/QtCore/QVariant
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o nb_game.obj ../src/nb_game.cpp
 
 nibbleberry.js_plugin_import.obj: G:/NibbleBerry/build-NibbleBerry-WebAssembly_Qt_6_5_2_single_threaded-Release/nibbleberry.js_plugin_import.cpp 
@@ -1506,7 +1512,7 @@ uninstall_target: FORCE
 
 install_js_file: first FORCE
 	@test -d $(INSTALL_ROOT:@msyshack@%=%)/opt/NibbleBerry/bin || mkdir -p $(INSTALL_ROOT:@msyshack@%=%)/opt/NibbleBerry/bin
-	$(QINSTALL_PROGRAM) G:/NibbleBerry/src/NibbleBerry.js $(INSTALL_ROOT:@msyshack@%=%)/opt/NibbleBerry/bin/NibbleBerry.js
+	$(QINSTALL) G:/NibbleBerry/build-NibbleBerry-WebAssembly_Qt_6_5_2_single_threaded-Release/NibbleBerry.js $(INSTALL_ROOT:@msyshack@%=%)/opt/NibbleBerry/bin/NibbleBerry.js
 
 uninstall_js_file: FORCE
 	-$(DEL_FILE) -r $(INSTALL_ROOT:@msyshack@%=%)/opt/NibbleBerry/bin/NibbleBerry.js
