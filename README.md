@@ -9,7 +9,7 @@ Qt Creator v11.0.2
 
 ## For the user
 
-Live demo available [here](https://lisr-pcs.github.io/NibbleBerry)
+Live demo available [here](https://lisr-pcx.github.io/NibbleBerry/index.html)
 
 * **Left-Click** assign to yellow player
 * **Right-Click** assign to red player
