@@ -1,3 +1,12 @@
+//============================================================================
+// Project: NibbleBerry
+// File: nb_game.h
+// Unlicense, 2024
+//
+// Visit site: github.com/lisr-pcx/NibbleBerry
+// Silly experiments and games after dinner
+//============================================================================
+
 #ifndef NB_GAME_H
 #define NB_GAME_H
 

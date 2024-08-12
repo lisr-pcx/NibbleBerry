@@ -1,3 +1,12 @@
+//============================================================================
+// Project: NibbleBerry
+// File: nb_globals.h
+// Unlicense, 2024
+//
+// Visit site: github.com/lisr-pcx/NibbleBerry
+// Silly experiments and games after dinner
+//============================================================================
+
 #ifndef NB_GLOBALS_H
 #define NB_GLOBALS_H
 

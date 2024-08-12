@@ -1,3 +1,12 @@
+//============================================================================
+// Project: NibbleBerry
+// File: nb_game.cpp
+// Unlicense, 2024
+//
+// Visit site: github.com/lisr-pcx/NibbleBerry
+// Silly experiments and games after dinner
+//============================================================================
+
 #include "nb_game.h"
 #include <QRect>
 #include <QVariant>
