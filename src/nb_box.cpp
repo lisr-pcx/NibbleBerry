@@ -2,16 +2,14 @@
 // Project: NibbleBerry
 // File: nb_box.cpp
 // Unlicense, 2024
-//
 // Visit site: github.com/lisr-pcx/NibbleBerry
-// Silly experiments and games after dinner
 //============================================================================
 
 #include "nb_box.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
 
-NB_Box::NB_Box(unsigned int box_index, QGraphicsItem* parent) :
+NB_Box::NB_Box(QGraphicsItem* parent) :
     QGraphicsEllipseItem(parent)
 {
     _status = BoxStatus::BLUEBERRY;

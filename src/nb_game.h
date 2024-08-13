@@ -2,9 +2,7 @@
 // Project: NibbleBerry
 // File: nb_game.h
 // Unlicense, 2024
-//
 // Visit site: github.com/lisr-pcx/NibbleBerry
-// Silly experiments and games after dinner
 //============================================================================
 
 #ifndef NB_GAME_H
@@ -17,6 +15,7 @@
 #include <QVectorIterator>
 #include "nb_globals.h"
 #include "nb_box.h"
+#include "nb_board.h"
 
 class NB_Game : public QGraphicsView
 {
@@ -39,7 +38,8 @@ private:
 
     void ConsoleDebug();
 
-    QVector<NB_Box*>    _boxes;
+    //QVector<NB_Box*>    _board;
+    Board<NB_Box*, k_board_size> _board{Board<NB_Box*, k_board_size>(nullptr)};
 };
 
 #endif // NB_GAME_H

@@ -2,9 +2,7 @@
 // Project: NibbleBerry
 // File: main.cpp
 // Unlicense, 2024
-//
 // Visit site: github.com/lisr-pcx/NibbleBerry
-// Silly experiments and games after dinner
 //============================================================================
 
 #include <QApplication>

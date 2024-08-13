@@ -2,14 +2,13 @@
 // Project: NibbleBerry
 // File: nb_game.cpp
 // Unlicense, 2024
-//
 // Visit site: github.com/lisr-pcx/NibbleBerry
-// Silly experiments and games after dinner
 //============================================================================
 
 #include "nb_game.h"
 #include <QRect>
 #include <QVariant>
+#include <stdio.h>      // C-print style debugging
 
 NB_Game::NB_Game(QWidget* parent)
 {
@@ -27,35 +26,40 @@ NB_Game::NB_Game(QWidget* parent)
                        k_border_size_px*2 + k_cell_size_px*k_board_size);
 
     // build board
-    for (unsigned int idx=0; idx<(k_board_size*k_board_size); idx++)
+    for (unsigned int y=1; y<=k_board_size; y++)
     {
-        NB_Box* ptr_tmp = new NB_Box(idx);
-        ptr_tmp->setRect(k_border_size_px+(k_cell_size_px*(idx%k_board_size)),
-                         k_border_size_px+(k_cell_size_px*(idx/k_board_size)),
-                         k_cell_size_px,
-                         k_cell_size_px);
+        for (unsigned int x=1; x<=k_board_size; x++)
+        {
+            NB_Box* ptr_box = new NB_Box();
 
-        // default color at start-up
-        ptr_tmp->setBrush(Qt::blue);
+            // position, shape, colors...
+            ptr_box->setRect(k_border_size_px+(k_cell_size_px*(x-1)),
+                             k_border_size_px+(k_cell_size_px*(y-1)),
+                             k_cell_size_px,
+                             k_cell_size_px);
+            ptr_box->setBrush(Qt::blue);
 
-        // signal-slot
-        connect(ptr_tmp, SIGNAL(NewStatus(NB_Box*)), this, SLOT(UpdateBoxColor(NB_Box*)));
-        connect(ptr_tmp, SIGNAL(RotateBoxes(NB_Box*, int, int)), this, SLOT(RotateBoxesGUI(NB_Box*, int, int)));
+            // add to graphics
+            ptr_scene->addItem(ptr_box);
 
-        _boxes.push_back(ptr_tmp);
-        ptr_scene->addItem(ptr_tmp);
+            // signal-slot
+            connect(ptr_box, SIGNAL(NewStatus(NB_Box*)), this, SLOT(UpdateBoxColor(NB_Box*)));
+            connect(ptr_box, SIGNAL(RotateBoxes(NB_Box*, int, int)), this, SLOT(RotateBoxesGUI(NB_Box*, int, int)));
+
+            // store into data structure
+            _board.Set(ptr_box, x, y);
+        }
     }
-
     this->show();
 }
 
 NB_Game::~NB_Game()
 {
-    // clean-up
-    for (auto& item : _boxes)
-    {
-        delete item;
-    }
+//    // clean-up
+//    for (auto& item : _board)
+//    {
+//        delete item;
+//    }
     delete ptr_scene;
 }
 
@@ -66,14 +70,17 @@ NB_Game::~NB_Game()
 void NB_Game::ForceUpdateGUI()
 {
     // update position of NB_Box elements
-    for (unsigned int idx=0; idx<(k_board_size*k_board_size); idx++)
+    for (unsigned int y=1; y<=k_board_size; y++)
     {
-        NB_Box* ptr_tmp = _boxes.at(idx);
-        ptr_tmp->setRect(k_border_size_px+(k_cell_size_px*(idx%k_board_size)),
-                         k_border_size_px+(k_cell_size_px*(idx/k_board_size)),
-                         k_cell_size_px,
-                         k_cell_size_px);
-        UpdateBoxColor(ptr_tmp);
+        for (unsigned int x=1; x<=k_board_size; x++)
+        {
+            NB_Box* ptr_box = _board.Get(x, y);
+            ptr_box->setRect(k_border_size_px+(k_cell_size_px*(x-1)),
+                             k_border_size_px+(k_cell_size_px*(y-1)),
+                             k_cell_size_px,
+                             k_cell_size_px);
+            UpdateBoxColor(ptr_box);
+        }
     }
     ConsoleDebug();
 }
@@ -101,32 +108,32 @@ void NB_Game::RotateBoxesGUI(NB_Box* ptr_box, int angle, int intensity)
 {
     if (ptr_box != nullptr)
     {
-        auto iterator = std::find(_boxes.begin(), _boxes.end(), ptr_box);
-        if (iterator != _boxes.end())
+        Board<NB_Box*, k_board_size>::position_t pos = _board.Position(ptr_box);
+
+        if ((pos.x > 0) &&
+            (pos.y > 0))
         {
-            // Find the correspondig index of the box
-            unsigned int index = iterator - _boxes.begin();
-
-            if ( ((20>=angle) && (angle>=0)) ||
-                 ((360>=angle) && (angle>=340)) )
+            // horizontal
+            if ( ((25>=angle) && (angle>=0)) ||
+                ((360>=angle) && (angle>=335)) )
             {
-                ScrollLeftRight(index, intensity);
+                _board.RotateHorizontally(pos.y, intensity);
             }
-            if ((200>=angle) && (angle>=160))
+            if ((195>=angle) && (angle>=155))
             {
-                ScrollLeftRight(index, -intensity);
+                _board.RotateHorizontally(pos.y, -intensity);
             }
-
-            if ((290>=angle) && (angle>=250))
+            // vertical
+            if ((285>=angle) && (angle>=245))
             {
-                ScrollUpDown(index, intensity);
+                _board.RotateVertically(pos.x, intensity);
             }
-            if ((110>=angle) && (angle>=70))
+            if ((105>=angle) && (angle>=65))
             {
-                ScrollUpDown(index, -intensity);
+                _board.RotateVertically(pos.x, -intensity);
             }
-            ForceUpdateGUI();
         }
+        ForceUpdateGUI();
     }
 }
 
@@ -134,69 +141,16 @@ void NB_Game::RotateBoxesGUI(NB_Box* ptr_box, int angle, int intensity)
 // PRIVATE METHODS
 // ---------------
 
-void NB_Game::ScrollLeftRight(unsigned int box_index, int value)
-{
-    // identify first element of the row
-    unsigned int start = (box_index / k_board_size) * k_board_size;
-    // normalize to avoid useless loops and convert
-    // to use only left shifting
-    if (value>0)
-    {
-        value=k_board_size-(value%k_board_size);
-    }
-
-    // for value times
-    for (int t=0; t<abs(value); t++)
-    {
-        // store first value for later insert
-        NB_Box* first = _boxes.at(start);
-        // shifting left of one position
-        for (int k=start; k<(start+k_board_size-1); k++)
-        {
-            _boxes.replace(k, _boxes.at(k+1));
-        }
-        // later insert
-        _boxes.replace(start+k_board_size-1, first);
-    }
-}
-
-void NB_Game::ScrollUpDown(unsigned int box_index, int value)
-{
-    // identify first element of the column
-    unsigned int start = (box_index % k_board_size);
-    // normalize to avoid useless loops and convert
-    // to use only left shifting
-    if (value>0)
-    {
-        value=k_board_size-(value%k_board_size);
-    }
-    qDebug() << "shifting up by:" << value << " start on " << start;
-
-    // for value times
-    for (int t=0; t<abs(value); t++)
-    {
-        // store first value for later insert
-        NB_Box* first = _boxes.at(start);
-        // shifting up of one position
-        for (int k=start; k<(k_board_size-1)*k_board_size; k=k+k_board_size)
-        {
-            _boxes.replace(k, _boxes.at(k+k_board_size));
-        }
-        // later insert
-        _boxes.replace(start+(k_board_size-1)*k_board_size, first);
-    }
-}
-
 void NB_Game::ConsoleDebug()
 {
-    printf("\n\n---BOXES---");
-    for (int k=0; k<_boxes.size(); k++)
+    printf("\n\n---BOXES---\n");
+    for (unsigned int y=1; y<=k_board_size; y++)
     {
-        if ((k%k_board_size)==0)
+        for (unsigned int x=1; x<=k_board_size; x++)
         {
-            printf("\n");
+            printf(" %1d", _board.Get(x,y)->GetStatus());
         }
-        printf(" %1d", _boxes.at(k)->GetStatus());
+        printf("\n");
     }
     // force manually.. to have it working on C++ (so sad)
     fflush(stdout);

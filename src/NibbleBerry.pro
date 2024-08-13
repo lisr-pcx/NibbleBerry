@@ -14,6 +14,7 @@ SOURCES += \
     nb_game.cpp
 
 HEADERS += \
+    nb_board.h \
     nb_box.h \
     nb_game.h \
     nb_globals.h

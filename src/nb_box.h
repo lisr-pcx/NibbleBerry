@@ -2,9 +2,7 @@
 // Project: NibbleBerry
 // File: nb_box.h
 // Unlicense, 2024
-//
 // Visit site: github.com/lisr-pcx/NibbleBerry
-// Silly experiments and games after dinner
 //============================================================================
 
 #ifndef NB_BOX_H
@@ -31,7 +29,7 @@ public:
     };
     Q_ENUM(BoxStatus)
 
-    NB_Box(unsigned int box_index, QGraphicsItem* parent=0);
+    NB_Box(QGraphicsItem* parent=0);
 
     // Getters and Setters
     BoxStatus GetStatus() { return _status; };
