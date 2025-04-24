@@ -38,10 +38,19 @@ const BERRY_MIN_RAD: i32 = 20;
 const BERRY_MAX_RAD: i32 = 50;
 
 #[derive(Debug)]
+enum FallingMode {
+    NoFall,
+    Center,
+    ArcToLeft,
+    ArcToRight,
+}
+
+#[derive(Debug)]
 pub struct Berry {
     x: i32,
     y: i32,
     rad: i32,
+    fallmode: FallingMode,
 }
 
 impl Berry {
@@ -50,13 +59,35 @@ impl Berry {
             x: x,
             y: y,
             rad: radius,
+            fallmode: FallingMode::Center,
+        }
+    }
+
+    fn fall(&mut self) {
+        match self.fallmode {
+            FallingMode::ArcToLeft =>
+            {
+                self.x -= 5;
+                self.y += 1;
+            },
+            FallingMode::ArcToRight =>
+            {
+                self.x += 5;
+                self.y += 1;
+            },
+           FallingMode::Center =>
+           {
+                self.y += 5;
+           },
+            _ =>
+                println!("no fall"),
         }
     }
 
     fn collision_with(&self, other: &Berry) -> bool {
         let dist: i32 = ((self.x - other.x).pow(2) + (self.y - other.y).pow(2)).isqrt();
         if dist <= (self.rad + other.rad) {
-            println!("s{:?}   o{:?}", self, other);
+            //println!("s{:?}   o{:?}", self, other);
             return true;
         }
         return false;
@@ -72,6 +103,7 @@ impl Distribution<Berry> for rand::distr::StandardUniform {
             x: rand_x,
             y: rand_y,
             rad: rand_rad,
+            fallmode: FallingMode::Center,
         }
     }
 }
@@ -102,24 +134,50 @@ impl App {
     fn gravity(&mut self) {
         for b_idx in 0..self.berries.len() {
 
-            let mut free_fall : bool = true;
+            let mut left_collision: bool = false;
+            let mut right_collision: bool = false;
+            let mut center_collision: bool = false;
 
+            // check collision with others berries, below the current one
             for compare_idx in 0..self.berries.len() {
-                if b_idx != compare_idx {
-                    if self.berries[b_idx].collision_with(&self.berries[compare_idx]) {
-                        free_fall = false;
-                        continue;
+
+                if (b_idx != compare_idx) && (self.berries[b_idx].y <= self.berries[compare_idx].y) {
+                    if self.berries[b_idx].collision_with(&self.berries[compare_idx]) {                        
+                        if self.berries[b_idx].x < self.berries[compare_idx].x {
+                            left_collision = true;
+                            continue;
+                        }
+                        if self.berries[b_idx].x > self.berries[compare_idx].x {
+                            right_collision = true;
+                            continue;
+                        }
+                        if self.berries[b_idx].x == self.berries[compare_idx].x {
+                            center_collision = true;
+                            break;
+                        }
                     }
                 }
             }
 
+            if center_collision || (left_collision && right_collision) {
+                self.berries[b_idx].fallmode = FallingMode::NoFall;
+            }
+            else if left_collision {
+                self.berries[b_idx].fallmode = FallingMode::ArcToLeft;
+            }
+            else if right_collision {
+                self.berries[b_idx].fallmode = FallingMode::ArcToRight;
+            }
+            else {                
+                self.berries[b_idx].fallmode = FallingMode::Center;
+            }
+ 
+            // check collision with ground
             if (self.berries[b_idx].y + self.berries[b_idx].rad) >= self.ground {
-                free_fall = false;
+                self.berries[b_idx].fallmode = FallingMode::NoFall;
             }
-            
-            if free_fall == true {
-                self.berries[b_idx].y += 5;
-            }
+                        
+            self.berries[b_idx].fall();
         }
     }
 
