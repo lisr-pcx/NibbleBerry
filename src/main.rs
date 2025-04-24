@@ -15,17 +15,27 @@ extern crate graphics;
 extern crate opengl_graphics;
 extern crate piston;
 
-use num_integer::Roots;
+use rand::prelude::*;
 
-use glutin_window::GlutinWindow as Window;
+//use glutin_window::GlutinWindow as Window;
 use graphics::Transformed;
 use opengl_graphics::{GlGraphics, OpenGL};
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{RenderArgs, RenderEvent, UpdateArgs, UpdateEvent};
-use piston::window::WindowSettings;
+//use piston::window::WindowSettings;
 
 const GAME_BOARD_WIDTH: u32 = 600;
 const GAME_BOARD_HEIGHT: u32 = 600;
+
+const GAME_RANDOM_MIN_X: i32 = 50;
+const GAME_RANDOM_MAX_X: i32 = GAME_BOARD_WIDTH as i32 - GAME_RANDOM_MIN_X;
+const GAME_RANDOM_MIN_Y: i32 = 100;
+const GAME_RANDOM_MAX_Y: i32 = GAME_BOARD_HEIGHT as i32 - GAME_RANDOM_MIN_Y;
+
+const BERRY_ON_BASKET: i32 = 30;
+const BERRY_DIST_WHEN_DROPPING: i32 = 100;
+const BERRY_MIN_RAD: i32 = 20;
+const BERRY_MAX_RAD: i32 = 50;
 
 #[derive(Debug)]
 pub struct Berry {
@@ -53,6 +63,19 @@ impl Berry {
     }
 }
 
+impl Distribution<Berry> for rand::distr::StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Berry {
+        let rand_x: i32 = rng.random_range(GAME_RANDOM_MIN_X..GAME_RANDOM_MAX_X);
+        let rand_y: i32 = rng.random_range(GAME_RANDOM_MIN_Y..GAME_RANDOM_MAX_Y);
+        let rand_rad: i32 = rng.random_range(BERRY_MIN_RAD..BERRY_MAX_RAD);
+        Berry {
+            x: rand_x,
+            y: rand_y,
+            rad: rand_rad,
+        }
+    }
+}
+
 pub struct App {
     gl: GlGraphics, // OpenGL drawing backend
     berries: Vec<Berry>,
@@ -61,21 +84,17 @@ pub struct App {
 
 impl App {
     fn new(opengl: OpenGL) -> Self {
-        let b1 = Berry::new(50, 50, 20);
-        let b2 = Berry::new(350, 250, 60);
-        let b3 = Berry::new(500, 100, 40);
-        let b4 = Berry::new(400, 20, 40);
-        let b5 = Berry::new(280, 80, 30);
-        let mut bbb: Vec<Berry> = Vec::new();
-        bbb.push(b1);
-        bbb.push(b2);
-        bbb.push(b3);
-        bbb.push(b4);
-        bbb.push(b5);
+        let mut berries: Vec<Berry> = Vec::new();
+        let mut rng = rand::rng();
+        for nb in 0..BERRY_ON_BASKET {
+            let mut b: Berry = rng.sample(rand::distr::StandardUniform);
+            b.y = (-1) * BERRY_DIST_WHEN_DROPPING * (nb as i32);
+            berries.push(b);
+        }
 
         App {
             gl: GlGraphics::new(opengl),
-            berries: bbb,
+            berries: berries,
             ground: 550,
         }
     }
