@@ -15,6 +15,8 @@ extern crate graphics;
 extern crate opengl_graphics;
 extern crate piston;
 
+use piston::PressEvent;
+use piston::input::*;
 use rand::prelude::*;
 
 //use glutin_window::GlutinWindow as Window;
@@ -67,20 +69,19 @@ impl Berry {
         match self.fallmode {
             FallingMode::ArcToLeft =>
             {
-                self.x -= 5;
+                self.x -= 6;
                 self.y += 1;
             },
             FallingMode::ArcToRight =>
             {
-                self.x += 5;
+                self.x += 6;
                 self.y += 1;
             },
            FallingMode::Center =>
            {
                 self.y += 5;
            },
-            _ =>
-                println!("no fall"),
+            _ => (),
         }
     }
 
@@ -91,6 +92,15 @@ impl Berry {
             return true;
         }
         return false;
+    }
+
+    fn collision_with_point(&self, x: i32, y:i32) -> bool {
+        let dist: i32 = ((self.x - x).pow(2) + (self.y - y).pow(2)).isqrt();
+        if dist <= self.rad {
+            return true;
+        }
+        return false;
+ 
     }
 }
 
@@ -181,10 +191,20 @@ impl App {
         }
     }
 
+    fn pick_berry (&mut self, x: i32, y:i32) {
+        for b_idx in 0..self.berries.len() {
+            if self.berries[b_idx].collision_with_point(x, y) {
+                self.berries.remove(b_idx);
+                break;
+            }
+        }
+    }
+
     fn render(&mut self, args: &RenderArgs) {
         const WHITE: [f32; 4] = [1.0, 1.0, 1.0, 1.0];
         const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
         const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
+        const BLUE: [f32; 4] = [0.2, 0.3, 0.5, 1.0];
 
         //let square = graphics::rectangle::square(20.0, 20.0, 40.0);
 
@@ -206,7 +226,7 @@ impl App {
                     b.y as f64 - b.rad as f64, 
                     b.rad as f64 + b.rad as f64
                 );
-                graphics::ellipse(RED, square_berry, transform, gl);
+                graphics::ellipse(BLUE, square_berry, transform, gl);
             }
         });
     }
@@ -232,8 +252,22 @@ fn main() {
     // Create a new game and run it.
     let mut game_app = App::new(opengl);
 
+    // Mouse position
+    let mut cursor = [0, 0];
+
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut game_window) {
+
+        e.mouse_cursor(|pos| {
+            cursor[0] = pos[0] as i32;
+            cursor[1] = pos[1] as i32;
+        });
+ 
+        if let Some(Button::Mouse(button)) = e.press_args() {
+            game_app.pick_berry(cursor[0], cursor[1]);
+            println!("x {}   y {}", cursor[0], cursor[1]);
+        }
+
         if let Some(args) = e.render_args() {
             game_app.gravity();
             game_app.render(&args);
