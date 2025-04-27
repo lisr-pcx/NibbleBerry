@@ -1,14 +1,19 @@
-// Just play around... this is not the final game
-
-// Set toolchain:
-//      $ cargo add bevy
-//      $ rustup update
-//      $ rustup install 1.86.0
-//      $ rustup default 1.86.0
-
-// System libraries missing (on my laptop)
-//      $ sudo dnf makecache --refresh
-//      $ sudo dnf install gcc-c++ libX11-devel alsa-lib-devel systemd-devel
+//! A silly experiment after dinner... (for two)  
+//! This is not the final game
+//! 
+//! # Missing features (roadmap)
+//! 
+//! * [ ] Better implementation of physics/gravity
+//! * [ ] Add documentation test (for cargo test)
+//! * [ ] Create walls (berries contained inside a jar)
+//! * [ ] Add player1, player2, scores, ...
+//! * [ ] Add game menù (play, restart, quit)
+//! 
+//! Only for educational purpose remove some of the "use clause" and write full namespaces.
+//! 
+//! # Notes
+//! 
+//! On main function use `OpenGL__V2_1` if not working v3.2
 
 extern crate glutin_window;
 extern crate graphics;
@@ -19,23 +24,27 @@ use piston::PressEvent;
 use piston::input::*;
 use rand::prelude::*;
 
-//use glutin_window::GlutinWindow as Window;
 use graphics::Transformed;
 use opengl_graphics::{GlGraphics, OpenGL};
 use piston::event_loop::{EventSettings, Events};
 use piston::input::{RenderArgs, RenderEvent, UpdateArgs, UpdateEvent};
-//use piston::window::WindowSettings;
 
+/// Game area
 const GAME_BOARD_WIDTH: u32 = 600;
 const GAME_BOARD_HEIGHT: u32 = 600;
 
+/// Min and Max position for berries (center)
 const GAME_RANDOM_MIN_X: i32 = 50;
 const GAME_RANDOM_MAX_X: i32 = GAME_BOARD_WIDTH as i32 - GAME_RANDOM_MIN_X;
 const GAME_RANDOM_MIN_Y: i32 = 100;
 const GAME_RANDOM_MAX_Y: i32 = GAME_BOARD_HEIGHT as i32 - GAME_RANDOM_MIN_Y;
 
+/// Man number of berries generated (=dropped) at startup
 const BERRY_ON_BASKET: i32 = 30;
+/// Vertical distance between generated berries
 const BERRY_DIST_WHEN_DROPPING: i32 = 100;
+
+// Min and Max berry size
 const BERRY_MIN_RAD: i32 = 20;
 const BERRY_MAX_RAD: i32 = 50;
 
@@ -119,9 +128,9 @@ impl Distribution<Berry> for rand::distr::StandardUniform {
 }
 
 pub struct App {
-    gl: GlGraphics, // OpenGL drawing backend
-    berries: Vec<Berry>,
-    ground: i32,
+    gl: GlGraphics,         // OpenGL drawing backend
+    berries: Vec<Berry>,    // List of berries available on game area
+    ground: i32,            // Vertical position of the ground
 }
 
 impl App {
@@ -249,12 +258,13 @@ fn main() {
             .build()
             .unwrap();
 
-    // Create a new game and run it.
+    // Create a new game and run it
     let mut game_app = App::new(opengl);
 
-    // Mouse position
+    // Store mouse position
     let mut cursor = [0, 0];
 
+    // Manage events
     let mut events = Events::new(EventSettings::new());
     while let Some(e) = events.next(&mut game_window) {
 
@@ -265,7 +275,6 @@ fn main() {
  
         if let Some(Button::Mouse(button)) = e.press_args() {
             game_app.pick_berry(cursor[0], cursor[1]);
-            println!("x {}   y {}", cursor[0], cursor[1]);
         }
 
         if let Some(args) = e.render_args() {

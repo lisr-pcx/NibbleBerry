@@ -2,38 +2,61 @@
 
 A silly experiment after dinner... (for two)
 
-Live demo currently not available.
-
 ## Toolchain
 
-rustc 1.77.1
+rustc 1.86.0
 
-This simple game uses Bevy Engine, further info ([here](https://bevyengine.org/)).
+Please refer to "Cargo.toml" for complete list of dependencies.
+
+```bash
+rustup update
+rustup install 1.86.0
+rustup default 1.86.0
+```
+
+```bash
+cargo add piston
+cargo add rand
+```
+
+Some libraries missing on my OS (Fedora)
+
+```bash
+sudo dnf makecache --refresh
+sudo dnf install gcc-c++ libX11-devel alsa-lib-devel systemd-devel
+```
+
+## Game Engine
+
+Piston v1.0.0  
+Further info ([here](https://piston.rs/)).
 
 ## Design
 
 Turn-based game.  
-A pair number of berries is available inside a jar.
+A pair number of berries is available inside a jar.  
 The goal is to pick (=remove) berries to earn points.  
-Each player get points based on the number of berries moved after the picking.  
-The difference in size between the berry picked by player will cut the points earned on that turn.
+Each player get points based on the number of berries moved after picking one.  
+The difference in size between the berry picked by each player will cut the points earned on that turn.
 
-## Physics model of berries
+## Physics
 
 The *gravity* is applied without acceleration.
 
-Berries when are touching together (or the jar) are *kind of sticky*.
+TODO describe algorithm (when complete)
 
-For each berry:
-- check berris below
-- calculate distance between centers, and when it's less than the sum of radius then it's a contact point. Store it.
-- based on the number of contact points related to the center of the berry (x-axis):
-  - no contact points: free fall
-  - contact points on the left and on the right: do not fall
-  - contact points only on one side: fall also sliding to the other side
+## Documentation and tests
+
+Update rustdoc comments (outer/inner) frequently.  
+Then run `cargo doc --open`.
+
+More info [here](https://doc.rust-lang.org/rustdoc/what-is-rustdoc.html)
 
 ## Live demo
 
-Currently not available [here](https://lisr-pcx.github.io/NibbleBerry/index.html)
+Currently [not available](https://lisr-pcx.github.io/NibbleBerry/index.html)
 
-Instructions: just click to pickup desired berry.
+## License
+
+This is free and unencumbered software released into the public domain.  
+For more information, please refer to <https://unlicense.org>
