@@ -29,7 +29,7 @@ sudo dnf install gcc-c++ libX11-devel alsa-lib-devel systemd-devel
 ## Game Engine
 
 Piston v1.0.0  
-Further info ([here](https://piston.rs/)).
+Further info [here](https://piston.rs/)
 
 ## Design
 
